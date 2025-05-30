@@ -19,7 +19,7 @@ if st.button("Simulation starten"):
     fig, ax = plt.subplots(figsize=(10, 6))
     for met, values in data.items():
         ax.plot(values, label=met)
-    ax.set_xlabel("Zeit (a.u.)")
+    ax.set_xlabel("Zeit (Sekunden)")
     ax.set_ylabel("Konzentration (mM)")
     ax.set_title("Glykolyse: Metabolitenkonzentrationen")
     ax.legend()
