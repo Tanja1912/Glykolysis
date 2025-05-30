@@ -26,10 +26,12 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
 # Klasse für Enzyme
 # -----------------------------
 class Enzyme:                                   #Enzym Klasse mit Name, Maximale Geschwindikeit, Michaelis-Menten Konstante
-    def __init__(self, name, rate, km = 1.0):
+    def __init__(self, name, kcat, enzyme_conc, km = 1.0):
         self.name = name
-        self.vmax = rate
-        self.km = km
+        self.enzyme_conc = enzyme_conc         #Schätzung von Enzymaktivität und Zellvolumen in mM
+        self.kcat = kcat                       #kcat in 1/s
+        self.vmax = kcat * enzyme_conc         #Berechnung vmax aus kcat und enzym Konzentration in mM/s
+        self.km = km                           #km in mM
 
     def rate(self, substrate_conc):            #Berechnung Rate nach Michaelis-Menten
         s = substrate_conc              
@@ -38,7 +40,8 @@ class Enzyme:                                   #Enzym Klasse mit Name, Maximale
         else:
             return 0                           #Substrat < 0 --> Geschwindigkeit = o
     def __repr__(self):
-        return f"Enzyme({self.name}, vmax={self.vmax}, km={self.km})"
+        return f"Enzyme({self.name}, kcat={self.kcat}, [E]={self.enzyme_conc}, "
+                f"vmax={self.vmax:.3f}, km={self.km})")
 
 # -----------------------------
 # Klasse für Reaktionen
@@ -65,16 +68,31 @@ class Reaction:
 # Klasse für den Stoffwechselweg
 # -----------------------------
 class GlycolysisPathway:
-    def __init__(self):                                    
-        self.glucose = Metabolite("Glukose", 10.0)          #Metaboliten definieren und Ausgangskonzentration
-        self.g6p = Metabolite("Glucose-6-Phosphat", 0.0)
-        self.f6p = Metabolite("Fructose-6-Phosphat", 0.0)
-        self.pyruvate = Metabolite("Pyruvat", 0.0)
-
-        self.hexokinase = Enzyme("Hexokinase", rate=0.5)     #Enzyme definieren und Reaktionsgeschwindigkeit
-        self.isomerase = Enzyme("Isomerase", rate=0.4)
-        self.pyruvate_kinase = Enzyme("Pyruvat-Kinase", rate=0.7)
-                                                            #Reaktionen definieren
+    def __init__(self):                   #definieren der Metabolite und Ausgangskonzentrationen                 
+        self.glucose = Metabolite("Glukose", 10.0)                                               #Ausgangskonz. von Glucose 10 mM
+        self.glucose_6_phosphate = Metabolite("Glukose-6-phosphat", 0.0)
+        self.fructose_6_phosphate = Metabolite("Fruktose-6-phosphat", 0.0)
+        self.fructose_1_6_bisphosphate = Metabolite("Fruktose-1,6-bisphosphat", 0.0)
+        self.dhap = Metabolite("Dihydroxyacetonphosphat", 0.0)
+        self.g3p = Metabolite("Glycerinaldehyd-3-phosphat", 0.0)
+        self.bpg_1_3 = Metabolite("1,3-Bisphosphoglycerat", 0.0)
+        self.pg_3 = Metabolite("3-Phosphoglycerat", 0.0)
+        self.pg_2 = Metabolite("2-Phosphoglycerat", 0.0)
+        self.pep = Metabolite("Phosphoenolpyruvat", 0.0)
+        self.pyruvate = Metabolite("Pyruvat", 0.0) 
+                                                                                                  #Enzyme definieren und Reaktionsgeschwindigkeit 
+        self.hexokinase = Enzyme("Hexokinase", kcat=200, enzyme_conc=0.0025, km=0.05)             #Hexokinase angaben aus Hecokinase of Human Erythrocytes G. Gerber et al.
+        self.isomerase = Enzyme("Isomerase", kcat=150, enzyme_conc=0.002, km=0.1)                 #aus Studies on human triosephosphate isomerase. I. Isolation and properties of the enzyme from erythrocytes E.E. Rozacky et al.
+        self.pfk = Enzyme("Phosphofructokinase", kcat=300, enzyme_conc=0.002, km=0.08)            #aus Type 2 diabetes differentially affects the substrate saturation kinetic attributes of erythrocyte hexokinase and phosphofructokinase S. Katyare et al.
+        self.aldolase = Enzyme("Aldolase", kcat=100, enzyme_conc=0.0015, km=0.03)                 #aus Human aldolase A natural mutants: relationship between flexibility of the C-terminal region and enzyme function G. Esposito et al.
+        self.triosephosphat_isomerase = Enzyme("TPI", kcat=4300, enzyme_conc=0.002, km=0.6)       #aus Lehrbuch der Biochemie D.Voet et al. 
+        self.gapdh = Enzyme("GAPDH", kcat=250, enzyme_conc=0.002, km=0.02)                        #aus Immunoaffinity purification and characterization of glyceraldehyde-3-phosphate dehydrogenase from human erythrocytes D. Mountassif
+        self.pgk = Enzyme("PGK", kcat=300, enzyme_conc=0.002, km=0.2)                             #aus A study of phosphoglycerate kinase in human erythrocytes. I. Enzyme isolation, purification and assay M. Ali, Y. S. Brownstone
+        self.pgm = Enzyme("PGM", kcat=100, enzyme_conc=0.002, km=0.15)                            #aus Lehrbuch der Biochemie D.Voet et al. 
+        self.enolase = Enzyme("Enolase", kcat=200, enzyme_conc=0.002, km=0.07)                    #aus Riboregulation of Enolase 1 activity controls glycolysis and embryonic stem cell differentiation I. Huppertz et al.
+        self.pyruvate_kinase = Enzyme("Pyruvat-Kinase", kcat=350, enzyme_conc=0.002, km=0.07)     #aus Structure and Function of Human Erythrocyte Pyruvate Kinase: MOLECULAR BASIS OF NONSPHEROCYTIC HEMOLYTIC ANEMIA G.Valentini et al.
+        
+#Reaktionen definieren
         self.reactions = [
             Reaction("Glukose → G6P", self.glucose, self.g6p, self.hexokinase),
             Reaction("G6P → F6P", self.g6p, self.f6p, self.isomerase),
