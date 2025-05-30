@@ -169,7 +169,7 @@ if __name__ == "__main__":
     for met, values in data.items():                #für jeden Metabolit wird der zeitliche Verlauf als Linie geplottet
         plt.plot(values, label=met)
         
-    plt.xlabel("Zeit (a.u.)")                             #x-Wert: Zeit
+    plt.xlabel("Zeit (Sekunden)")                             #x-Wert: Zeit
     plt.ylabel("Konzentration (mM)")                      #y-Wert: Konzentration
     plt.title("Glykolyse: Metabolitenkonzentrationen")   #Diagrammtitel: Glykolyse: Metabolitenkonzentrationen
     plt.legend()
