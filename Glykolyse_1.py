@@ -88,8 +88,8 @@ class SplitReaction:                                                #chatgpt pro
 # Klasse für den Stoffwechselweg
 # -----------------------------
 class GlycolysisPathway:
-    def __init__(self):                   #definieren der Metabolite und Ausgangskonzentrationen                 
-        self.glucose = Metabolite("Glukose", 10.0)                                               #Ausgangskonz. von Glucose 10 mM
+    def __init__(self, glucose_conc = 10):                   #definieren der Metabolite und Ausgangskonzentrationen                 
+        self.glucose = Metabolite("Glukose", glucose_conc)                                               #Ausgangskonz. von Glucose 10 mM
         self.g6p = Metabolite("Glukose-6-phosphat", 0.0)
         self.f6p = Metabolite("Fruktose-6-phosphat", 0.0)
         self.f1_6bp = Metabolite("Fruktose-1,6-bisphosphat", 0.0)
@@ -134,7 +134,7 @@ class GlycolysisPathway:
             "Glukose-6-phosphat": [],
             "Fruktose-6-phosphat": [],
             "Fruktose-1,6-bisphosphat": [],
-            "Dihydroxyacetonphosphat + Glycerinaldehyd-3-phosphat" : [],
+            "Dihydroxyacetonphosphat" : [],
             "Glycerinaldehyd-3-phosphat" : [],
             "1,3-Bisphosphoglycerat" : [],
             "3-Phosphoglycerat" : [],
@@ -159,22 +159,5 @@ class GlycolysisPathway:
             history["Pyruvat"].append(self.pyruvate.conc)
 
         return history
-# -----------------------------
-# Ausführung & Visualisierung
-# -----------------------------
-if __name__ == "__main__":
-    model = GlycolysisPathway()                     #Modell wird erstellt mit allen Metaboliten  Enzymen und Reaktionen
-    data = model.simulate(steps=100, dt=1.0)         #Simulation über 100 Zeitschritte mit 1 EInheiten --> gespeichert in Data
-
-    for met, values in data.items():                #für jeden Metabolit wird der zeitliche Verlauf als Linie geplottet
-        plt.plot(values, label=met)
-        
-    plt.xlabel("Zeit (Sekunden)")                             #x-Wert: Zeit
-    plt.ylabel("Konzentration (mM)")                      #y-Wert: Konzentration
-    plt.title("Glykolyse: Metabolitenkonzentrationen")   #Diagrammtitel: Glykolyse: Metabolitenkonzentrationen
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
 
 
