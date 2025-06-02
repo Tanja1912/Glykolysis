@@ -9,10 +9,10 @@ st.title("🧬 Glykolyse-Simulation")
 st.sidebar.header("🕒 Simulation")
 steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10)
 dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1)
-glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=10.0, step=0.1)
+glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=200.0, step=0.1)
 
 # Modell laden
-model = GlycolysisPathway()
+model = GlycolysisPathway(glucose_conc=glucose_input)
 
 # Mapping von Enzymnamen zu Instanzen
 enzym_map = {
