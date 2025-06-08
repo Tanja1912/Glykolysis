@@ -134,7 +134,10 @@ class GlycolysisPathway:
             "Glukose-6-phosphat": [],
             "Fruktose-6-phosphat": [],
             "Fruktose-1,6-bisphosphat": [],
-            "Dihydroxyacetonphosphat + Glycerinaldehyd-3-phosphat" : [],
+            "Dihydroxyacetonphosphat": [],
+            "Glycerinaldehyd-3-phosphat": [],
+
+            #"Dihydroxyacetonphosphat + Glycerinaldehyd-3-phosphat" : [],
             "Glycerinaldehyd-3-phosphat" : [],
             "1,3-Bisphosphoglycerat" : [],
             "3-Phosphoglycerat" : [],
