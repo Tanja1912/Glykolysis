@@ -18,15 +18,15 @@ model = GlycolysisPathway(glucose_conc=glucose_input)
 # Mapping von Enzymnamen zu Instanzen
 enzym_map = {
     "Hexokinase": model.hexokinase,
-    "Phosphofructokinase": model.pfk,
-    "Pyruvat-Kinase": model.pyruvate_kinase,
     "Glukose-6-phosphat-Isomerase": model.isomerase,
+    "Phosphofructokinase": model.pfk,
     "Aldolase": model.aldolase,
-    "Triosephosphatisomerase": model.triosephosphat_isomerase,
+    "Triosephosphat-Isomerase": model.triosephosphat_isomerase,
     "Glycerinaldehyd-3-phosphat-Dehydrogenase": model.gapdh,
-    "3-Phosphoglyceratkinase": model.pgk,
+    "Phosphoglyceratkinase": model.pgk,
     "Phosphoglyceratmutase": model.pgm,
     "Enolase": model.enolase,
+    "Pyruvat-Kinase": model.pyruvate_kinase,
 }
 
 # Sidebar: Enzymparameter
