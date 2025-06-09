@@ -4,12 +4,16 @@
 import numpy as np
 
 
-# --- Objektorientierte Klassen --- für Metabolite Aufgabe 1
+# --- Objektorientierte Klassen ---
+
+# -----------------------------
+# Klasse für Metabolite
+# -----------------------------
 
 class Metabolite:                               #Modelliert Metaboliten in biochemischen Netzwerk 
     def __init__(self, name, initial_conc):     #erstellung Metabolit
         self.name = name                        #Name Molekül
-        self.conc = initial_conc                # Ausgangskonzentration (mM)
+        self.conc = initial_conc                # Ausgangskonzentration (mMol/L)
         self.history = [initial_conc]           #Speicherung der Werte
     
     def update_conc(self, delta):               #Aktualisiert Konzentration der Metaboliten basierend auf delta
@@ -22,7 +26,7 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
 # -----------------------------
 # Klasse für Enzyme
 # -----------------------------
-class Enzyme:                                   #Enzym Klasse mit Name, Maximale Geschwindikeit, Michaelis-Menten Konstante
+class Enzyme:                                   #Enzym Klasse mit Name,Turnover number, Enzymkonzentration und Michaelis-Menten-Konstante
     def __init__(self, name, kcat, enzyme_conc, km = 1.0):
         self.name = name
         self.enzyme_conc = enzyme_conc         #Schätzung von Enzymaktivität und Zellvolumen in mM
@@ -30,7 +34,7 @@ class Enzyme:                                   #Enzym Klasse mit Name, Maximale
         self.vmax = kcat * enzyme_conc         #Berechnung vmax aus kcat und enzym Konzentration in mM/s
         self.km = km                           #km in mM
 
-    def rate(self, substrate_conc):            #Berechnung Rate nach Michaelis-Menten
+    def rate(self, substrate_conc):            #Berechnung Enzymgeschwindigkeit basierend auf der Substratkonzentration nach Michaelis-Menten
         s = substrate_conc              
         if s > 0:                              #Substrat > 0 --> Berechnung vmax
             return self.vmax * s / (self.km + s)
@@ -49,33 +53,36 @@ class Reaction:
         self.product = product                                 # entstehendes Produkt
         self.enzyme = enzyme
     def rate(self):
-        return self.enzyme.rate(self.substrate.conc)           #aktuelle Reaktionsgeschwindigkeit und übergibt Wert an aktuelle Substrat Konz
+        return self.enzyme.rate(self.substrate.conc)           #Berechnet die aktuelle Reaktionsgeschwindigkeit basierend auf atueller Substratkonzentration
     
-    def step(self, dt):                                        #zeitliche Änderung der KOnzentration in Zeitabschnitt
-        v = self.rate()                                        #Momentane Reaktionsv
+    def step(self, dt):                                        #zeitliche Änderung der Konzentration in Zeitabschnitt
+        v = self.rate()                                        #Momentane Reaktionsgeschwindigkeit
         delta = v * dt                                         #Substratmenge die umgesetzt wird
-        self.substrate.update_conc(-delta)
-        self.product.update_conc(delta)
+        self.substrate.update_conc(-delta)                     #Veränderung der Substrat Konzentration --> sinkt bei -delta 
+        self.product.update_conc(delta)                        #Veränderung der Produkt Konzentration --> steigt bei delta
 
     def __repr__(self):
         return f"Reaction({self.name}, Enzyme={self.enzyme})"
-    
+        
+# -----------------------------
+# Klasse für Splitreaktion
+# -----------------------------    
 class SplitReaction:                                                #chatgpt prompt:wie kann ich eine Reaktion modellieren, bei der ein Substrat in zwei Produkte gespalten wird (z. B. F1,6BP → DHAP + G3P)?
     def __init__(self, name, substrate, product1, product2, enzyme):
         self.name = name
         self.substrate = substrate
-        self.product1 = product1
+        self.product1 = product1                                    #Spaltung der entstehenden Produkte in Produkt 1 und Produkt 2
         self.product2 = product2
         self.enzyme = enzyme
 
     def rate(self):
-        return self.enzyme.rate(self.substrate.conc)
-
+        return self.enzyme.rate(self.substrate.conc)                #siehe oben
+   
     def step(self, dt):
-        v = self.rate()
-        delta = v * dt
-        self.substrate.update_conc(-delta)
-        self.product1.update_conc(delta / 2)                #je 50%
+        v = self.rate()                                             #berechnet Reaktionsgeschwindigkeit
+        delta = v * dt                                              #Menge an Substrat die in Zeit dt umgesetzt wird  
+        self.substrate.update_conc(-delta)                          #Verringerung Substrat um delta
+        self.product1.update_conc(delta / 2)                        #Erhöhung Konzentration der Produkte um je 50%
         self.product2.update_conc(delta / 2)
 
     def __repr__(self):
@@ -85,11 +92,8 @@ class SplitReaction:                                                #chatgpt pro
 # Klasse für den Stoffwechselweg
 # -----------------------------
 class GlycolysisPathway:
-    def __init__(self, glucose_conc=10.0):
-        self.glucose = Metabolite("Glukose", glucose_conc)
-                                                             # ... restliche Initialisierung unverändert
-                                                                #definieren der Metabolite und Ausgangskonzentrationen                 
-                                                 #Ausgangskonz. von Glucose 10 mM
+    def __init__(self, glucose_conc=10.0):                                                              #Übergabe Anfangskonzentration von Glukose (10mMol/L); Platzhalter: kann in Streamlit angepasst werden oder beim erstellen eines Objekts der Klasse 
+        self.glucose = Metabolite("Glukose", glucose_conc)                                              #definieren der Metabolite mit spezifischen Namen und Ausgangskonzentrationen (alle starten bei 0 außer Glukose)                         
         self.g6p = Metabolite("Glukose-6-phosphat", 0.0)
         self.f6p = Metabolite("Fruktose-6-phosphat", 0.0)
         self.f1_6bp = Metabolite("Fruktose-1,6-bisphosphat", 0.0)
@@ -100,7 +104,7 @@ class GlycolysisPathway:
         self.pg_2 = Metabolite("2-Phosphoglycerat", 0.0)
         self.pep = Metabolite("Phosphoenolpyruvat", 0.0)
         self.pyruvate = Metabolite("Pyruvat", 0.0) 
-                                                                                                          #Enzyme definieren und Reaktionsgeschwindigkeit 
+                                                                                                          #definieren der Enzyme mit spezifischen Namen, Turnover Number, typischen Enzymkonzentrationen sowie Michaelis-Menten-Konstante → Werte aus der Literatur 
         self.hexokinase = Enzyme("Hexokinase", kcat=200, enzyme_conc=0.0025, km=0.05)                     #Hexokinase angaben aus Hecokinase of Human Erythrocytes G. Gerber et al.
         self.isomerase = Enzyme("Glukose-6-phosphat-Isomerase", kcat=150, enzyme_conc=0.002, km=0.1)      #aus Studies on human triosephosphate isomerase. I. Isolation and properties of the enzyme from erythrocytes E.E. Rozacky et al.
         self.pfk = Enzyme("Phosphofructokinase", kcat=300, enzyme_conc=0.002, km=0.08)                    #aus Type 2 diabetes differentially affects the substrate saturation kinetic attributes of erythrocyte hexokinase and phosphofructokinase S. Katyare et al.
@@ -112,7 +116,7 @@ class GlycolysisPathway:
         self.enolase = Enzyme("Enolase", kcat=200, enzyme_conc=0.002, km=0.07)                            #aus Riboregulation of Enolase 1 activity controls glycolysis and embryonic stem cell differentiation I. Huppertz et al.
         self.pyruvate_kinase = Enzyme("Pyruvat-Kinase", kcat=350, enzyme_conc=0.002, km=0.07)             #aus Structure and Function of Human Erythrocyte Pyruvate Kinase: MOLECULAR BASIS OF NONSPHEROCYTIC HEMOLYTIC ANEMIA G.Valentini et al.
                                                                                                            
-        self.reactions = [                                                                                #Reaktionen definieren
+        self.reactions = [                                                                                #Reaktionen definieren Ablauf aus Literatur; Umsetzung Substrat zu Produkt durch Enzym
             Reaction("Glukose → Glukose-6-phosphat", self.glucose, self.g6p, self.hexokinase),
             Reaction("Glukose-6-phosphat → Fruktose-6-phosphat", self.g6p, self.f6p, self.isomerase),
             Reaction("Fruktose-6-phosphat → Fruktose-1,6-bisphosphat", self.f6p, self.f1_6bp, self.pfk),
@@ -124,8 +128,8 @@ class GlycolysisPathway:
             Reaction("2-Phosphoglycerat → Phosphoenolpyruvat", self.pg_2, self.pep, self.enolase),
             Reaction("Phosphoenolpyruvat → Pyruvat", self.pep, self.pyruvate, self.pyruvate_kinase),
                     ]
-    def simulate(self, steps=100, dt=1.0):
-        history = {
+    def simulate(self, steps=100, dt=1.0):                                                                #Verlauf der Konzentrationen der Metabolite wird gespeichert (100 Zeitschritte mit 1 sek Länge → Anpassung über streamlit) über Dictionary
+            history = {                            
             "Glukose": [],
             "Glukose-6-phosphat": [],
             "Fruktose-6-phosphat": [],
@@ -139,11 +143,11 @@ class GlycolysisPathway:
             "Pyruvat": [],
         }
 
-        for _ in range(steps):
-            for reaction in self.reactions:
-                reaction.step(dt)
-        # Konzentrationen speichern
-            history["Glukose"].append(self.glucose.conc)
+        for _ in range(steps):                                                                            #durchlaufen der Schleife steps-mal
+            for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
+                reaction.step(dt)                                                                        
+                
+            history["Glukose"].append(self.glucose.conc)                                                  #aktuelle Konzentration der Metabolite wird im history Dictionary gespeichert durch append Funktion                                                  
             history["Glukose-6-phosphat"].append(self.g6p.conc)
             history["Fruktose-6-phosphat"].append(self.f6p.conc)
             history["Fruktose-1,6-bisphosphat"].append(self.f1_6bp.conc)
@@ -155,7 +159,7 @@ class GlycolysisPathway:
             history["Phosphoenolpyruvat"].append(self.pep.conc)
             history["Pyruvat"].append(self.pyruvate.conc)
         
-        return history
+        return history                                                                                     #Rückgabe des Dictionarys mit den Konzentrationsverläufen über die Zeit                                                             
 
 
 
