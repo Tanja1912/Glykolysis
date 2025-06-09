@@ -87,7 +87,7 @@ metabolites = [
 # Reaktionen: (Start, Ende, Enzym, reversible=True/False)
 steps = [
     ("Glucose", "Glucose-6-phosphat", "Hexokinase", False),
-    ("Glucose-6-phosphat", "Fructose-6-phosphat", "Phosphoglucose-Isomerase", True),
+    ("Glucose-6-phosphat", "Fructose-6-phosphat", "Glucose-6-phosphat-Isomerase", True),
     ("Fructose-6-phosphat", "Fructose-1,6-bisphosphat", "Phosphofructokinase", False),
     ("Fructose-1,6-bisphosphat", "Dihydroxyacetonphosphat", "Aldolase", True),
     ("Fructose-1,6-bisphosphat", "Glycerinaldehyd-3-phosphat", "Aldolase", True),
