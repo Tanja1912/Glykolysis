@@ -85,7 +85,7 @@ metabolites = [
 ]
 
 # Reaktionen: (Start, Ende, Enzym, reversible=True/False)
-edges = [
+steps = [
     ("Glucose", "Glucose-6-phosphat", "Hexokinase", False),
     ("Glucose-6-phosphat", "Fructose-6-phosphat", "Phosphoglucose-Isomerase", True),
     ("Fructose-6-phosphat", "Fructose-1,6-bisphosphat", "Phosphofructokinase", False),
@@ -103,8 +103,8 @@ edges = [
 for m in metabolites:
     dot.node(m)
 
-# Kanten mit Pfeilrichtung je nach Reversibilität
-for start, end, enzyme, reversible in edges:
+# Schritte mit Pfeilrichtung je nach Reversibilität
+for start, end, enzyme, reversible in steps:
     direction = "both" if reversible else "forward"
     dot.edge(start, end, label=enzyme, dir=direction)
 
