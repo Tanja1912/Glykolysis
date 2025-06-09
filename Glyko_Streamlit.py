@@ -3,14 +3,20 @@ import matplotlib.pyplot as plt
 import graphviz  
 from Glykolyse_1 import GlycolysisPathway
 
+# Grundeinstellungen für die Streamlit-App
 st.set_page_config(page_title="Glykolyse-Simulation", layout="wide")
 st.title("Glykolyse-Simulation")
 
 # Simulationsparameter
 st.sidebar.header("Simulation")
-steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10)
-dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1)
-glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=10.0, step=0.1)
+steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10) # Auswahl des Simulationszeitraums über einen Schieberegler
+dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1) # Eingabe des Zeitintervalls pro Simulationsschritt
+glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=10.0, step=0.1) # Eingabe der Anfangskonzentration von Glukose
+
+
+
+# Initialisierung des Modells mit der angegebenen Glukosekonzentration
+model = GlycolysisPathway(glucose_conc=glucose_input)
 
 # Modell laden
 model = GlycolysisPathway(glucose_conc=glucose_input)
@@ -33,26 +39,26 @@ enzym_map = {
 st.sidebar.header("Enzymparameter")
 for name, enzyme in enzym_map.items():
     with st.sidebar.expander(f"{name}", expanded=False):
-        enzyme.kcat = st.slider(f"{name} kcat (1/s)", 50, 5000, enzyme.kcat, 10)
-        enzyme.enzyme_conc = st.number_input(f"{name} – [E] (mM)", 0.0001, 0.01, enzyme.enzyme_conc, 0.0001)
-        enzyme.km = st.number_input(f"{name} Km (mM)", 0.01, 1.0, enzyme.km, 0.01)
-        enzyme.vmax = enzyme.kcat * enzyme.enzyme_conc  # vmax aktualisieren
+        enzyme.kcat = st.slider(f"{name} kcat (1/s)", 50, 5000, enzyme.kcat, 10) # Einstellung der katalytischen Rate (kcat)
+        enzyme.enzyme_conc = st.number_input(f"{name} – [E] (mM)", 0.0001, 0.01, enzyme.enzyme_conc, 0.0001) # Einstellung der Enzymkonzentration
+        enzyme.km = st.number_input(f"{name} Km (mM)", 0.01, 1.0, enzyme.km, 0.01)  # Einstellung des Km-Werts (Michaelis-Menten-Konstante)
+        enzyme.vmax = enzyme.kcat * enzyme.enzyme_conc  # # Automatische Berechnung von Vmax aus kcat und Enzymkonzentration
 
-# Simulation starten
+# Simulation starten bei Klick auf den Button
 if st.button("Simulation starten"):
     data = model.simulate(steps=steps, dt=dt)
     st.success("Simulation abgeschlossen!")
 
-    # Plot
+    # Plot der Metabolitenkonzentrationen über die Zeit
     st.subheader("Konzentrationsverläufe der Metaboliten")
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6)) # Erstellen einer neuen Grafik
     for met, values in data.items():
-        ax.plot(values, label=met)
+        ax.plot(values, label=met) # Kurve für jeden Metaboliten
     ax.set_xlabel("Zeit (s)")
     ax.set_ylabel("Konzentration (mM)")
     ax.legend()
     ax.grid(True)
-    st.pyplot(fig)
+    st.pyplot(fig) # Anzeige der Grafik in der Streamlit-App
 
 
 
