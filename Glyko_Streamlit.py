@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import graphviz  
 from Glykolyse_1 import GlycolysisPathway
 
 st.set_page_config(page_title="Glykolyse-Simulation", layout="wide")
@@ -53,8 +54,7 @@ if st.button("🚀 Simulation starten"):
     ax.grid(True)
     st.pyplot(fig)
 
-import streamlit as st
-import graphviz
+
 
 st.title("Glykolyse: Fluss der Metaboliten (ohne Kosubstrate)")
 
@@ -110,4 +110,5 @@ for start, end, enzyme, reversible in edges:
 
 # Diagramm anzeigen
 st.graphviz_chart(dot)
+
 
