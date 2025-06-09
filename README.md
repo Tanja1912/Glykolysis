@@ -1,0 +1,36 @@
+# Glykolyse-Simulation
+
+Simulierung des biochemischen Prozesses der Glykolyse mit objektorientierter Programmierung. Es wurden reale Enzymparameter verwendet die dem Stoffwechselweg, bei dem Glukose schrittweise durch die Enzyme zu Pyruvat abgebaut wird, folgen.
+
+## Verwendete Bibliotheken
+- `numpy` – für numerische Berechnungen  
+
+### Struktur und Funktionsweise
+
+#### Klassen
+
+- **`Metabolite`**  
+  → Modellierung einzelner Moleküle wie Glukose und Pyruvat mit ihrem Konzentrationsverlauf über die Zeit
+
+- **`Enzyme`**  
+  → Implementierung der Michaelis-Menten-Kinetik mit Werten aus der Literatur für kcat (Turnover number), Km (Michaelis-Menten-Konstante), und typischen Enzymkonzentrationen
+
+- **`Reaction`**  
+  → Modellierung der enzymatischen Umwandlungen eines Substrats zum jeweiligem Produkt
+
+- **`SplitReaction`**  
+  → Modellierung Spaltungsreaktion bei der ein Substrat in zwei Produkte reagiert (hier: Spaltung Fruktose-1,6-bisphosphat → Dihydroxyacetonphosphat + Glycerinaldehyd-3-phosphat) 
+
+- **`GlycolysisPathway`**  
+  → Modellierung aller Metabolite, Enzyme und Reaktionen des Glykolysewegs
+  → Mit der Methode `simulate()` werden zeitlich aufgelöste Konzentrationsverläufe berechnet
+
+
+## Beispiel: Simulation starten
+
+```python
+# Initialisierung
+pathway = GlycolysisPathway(glucose_conc=10.0)
+
+# Simulation durchführen (z. B. 100 Zeitschritte à 1 Sekunde)
+history = pathway.simulate(steps=100, dt=1.0)
