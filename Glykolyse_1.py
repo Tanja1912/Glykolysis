@@ -1,11 +1,9 @@
 #Importieren der Bibliotheken 
 #numpy --> numerische Berechnungen
-#matplotlib.pyplot --> visualisierung von Daten
-#networkx --> modellieren und zeichnen von Netzwerken
+
 
 import numpy as np
-import matplotlib.pyplot as plt
-import networkx as nx
+
 
 # --- Objektorientierte Klassen --- für Metabolite Aufgabe 1
 
@@ -159,22 +157,6 @@ class GlycolysisPathway:
             history["Pyruvat"].append(self.pyruvate.conc)
 
         return history
-# -----------------------------
-# Ausführung & Visualisierung
-# -----------------------------
-if __name__ == "__main__":
-    model = GlycolysisPathway()                     #Modell wird erstellt mit allen Metaboliten  Enzymen und Reaktionen
-    data = model.simulate(steps=100, dt=1.0)         #Simulation über 100 Zeitschritte mit 1 EInheiten --> gespeichert in Data
 
-    for met, values in data.items():                #für jeden Metabolit wird der zeitliche Verlauf als Linie geplottet
-        plt.plot(values, label=met)
-        
-    plt.xlabel("Zeit (Sekunden)")                             #x-Wert: Zeit
-    plt.ylabel("Konzentration (mM)")                      #y-Wert: Konzentration
-    plt.title("Glykolyse: Metabolitenkonzentrationen")   #Diagrammtitel: Glykolyse: Metabolitenkonzentrationen
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
 
 
