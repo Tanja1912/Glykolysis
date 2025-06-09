@@ -53,4 +53,61 @@ if st.button("🚀 Simulation starten"):
     ax.grid(True)
     st.pyplot(fig)
 
+import streamlit as st
+import graphviz
+
+st.title("Glykolyse: Fluss der Metaboliten (ohne Kosubstrate)")
+
+st.markdown("""
+Diese Visualisierung zeigt den Fluss der Metaboliten durch die Glykolyse. 
+Zwischen den Metaboliten sind die katalysierenden Enzyme angegeben. Kosubstrate wie ATP oder NAD⁺ werden bewusst nicht dargestellt.
+
+🔁 Reversible Reaktionen = Doppelpfeil  
+⏩ Irreversible Reaktionen = Einfacher Pfeil
+""")
+
+# Graphviz Diagramm
+dot = graphviz.Digraph()
+
+# Metaboliten
+metabolites = [
+    "Glucose",
+    "Glucose-6-phosphat",
+    "Fructose-6-phosphat",
+    "Fructose-1,6-bisphosphat",
+    "Dihydroxyacetonphosphat",
+    "Glycerinaldehyd-3-phosphat",
+    "1,3-Bisphosphoglycerat",
+    "3-Phosphoglycerat",
+    "2-Phosphoglycerat",
+    "Phosphoenolpyruvat",
+    "Pyruvat"
+]
+
+# Reaktionen: (Start, Ende, Enzym, reversible=True/False)
+edges = [
+    ("Glucose", "Glucose-6-phosphat", "Hexokinase", False),
+    ("Glucose-6-phosphat", "Fructose-6-phosphat", "Phosphoglucose-Isomerase", True),
+    ("Fructose-6-phosphat", "Fructose-1,6-bisphosphat", "Phosphofructokinase", False),
+    ("Fructose-1,6-bisphosphat", "Dihydroxyacetonphosphat", "Aldolase", True),
+    ("Fructose-1,6-bisphosphat", "Glycerinaldehyd-3-phosphat", "Aldolase", True),
+    ("Dihydroxyacetonphosphat", "Glycerinaldehyd-3-phosphat", "Triosephosphat-Isomerase", True),
+    ("Glycerinaldehyd-3-phosphat", "1,3-Bisphosphoglycerat", "Glycerinaldehyd-3-phosphat-Dehydrogenase", True),
+    ("1,3-Bisphosphoglycerat", "3-Phosphoglycerat", "Phosphoglycerat-Kinase", False),
+    ("3-Phosphoglycerat", "2-Phosphoglycerat", "Phosphoglycerat-Mutase", True),
+    ("2-Phosphoglycerat", "Phosphoenolpyruvat", "Enolase", True),
+    ("Phosphoenolpyruvat", "Pyruvat", "Pyruvatkinase", False)
+]
+
+# Knoten hinzufügen
+for m in metabolites:
+    dot.node(m)
+
+# Kanten mit Pfeilrichtung je nach Reversibilität
+for start, end, enzyme, reversible in edges:
+    direction = "both" if reversible else "forward"
+    dot.edge(start, end, label=enzyme, dir=direction)
+
+# Diagramm anzeigen
+st.graphviz_chart(dot)
 
