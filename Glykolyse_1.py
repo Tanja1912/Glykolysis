@@ -67,7 +67,7 @@ class Reaction:
 # -----------------------------
 # Klasse für Splitreaktion
 # -----------------------------    
-class SplitReaction:                                                #chatgpt prompt:wie kann ich eine Reaktion modellieren, bei der ein Substrat in zwei Produkte gespalten wird (z. B. F1,6BP → DHAP + G3P)?
+class SplitReaction:                                                
     def __init__(self, name, substrate, product1, product2, enzyme):
         self.name = name
         self.substrate = substrate
@@ -105,17 +105,17 @@ class GlycolysisPathway:
         self.pep = Metabolite("Phosphoenolpyruvat", 0.0)
         self.pyruvate = Metabolite("Pyruvat", 0.0) 
                                                                                                           #definieren der Enzyme mit spezifischen Namen, Turnover Number, typischen Enzymkonzentrationen sowie Michaelis-Menten-Konstante → Werte aus der Literatur 
-        self.hexokinase = Enzyme("Hexokinase", kcat=200, enzyme_conc=0.0025, km=0.05)                     #Hexokinase angaben aus Hecokinase of Human Erythrocytes G. Gerber et al.
-        self.isomerase = Enzyme("Glukose-6-phosphat-Isomerase", kcat=150, enzyme_conc=0.002, km=0.1)      #aus Studies on human triosephosphate isomerase. I. Isolation and properties of the enzyme from erythrocytes E.E. Rozacky et al.
-        self.pfk = Enzyme("Phosphofructokinase", kcat=300, enzyme_conc=0.002, km=0.08)                    #aus Type 2 diabetes differentially affects the substrate saturation kinetic attributes of erythrocyte hexokinase and phosphofructokinase S. Katyare et al.
-        self.aldolase = Enzyme("Aldolase", kcat=100, enzyme_conc=0.0015, km=0.03)                         #aus Human aldolase A natural mutants: relationship between flexibility of the C-terminal region and enzyme function G. Esposito et al.
-        self.triosephosphat_isomerase = Enzyme("Triosephosphatisomerase", kcat=4300, enzyme_conc=0.002, km=0.6)               #aus Lehrbuch der Biochemie D.Voet et al. 
-        self.gapdh = Enzyme("Glycerinaldehyd-3-phosphat-Dehydrogenase", kcat=250, enzyme_conc=0.002, km=0.02)                                #aus Immunoaffinity purification and characterization of glyceraldehyde-3-phosphate dehydrogenase from human erythrocytes D. Mountassif
-        self.pgk = Enzyme("3-Phosphoglyceratkinase", kcat=300, enzyme_conc=0.002, km=0.2)                                     #aus A study of phosphoglycerate kinase in human erythrocytes. I. Enzyme isolation, purification and assay M. Ali, Y. S. Brownstone
-        self.pgm = Enzyme("Phosphoyglyceratmutase", kcat=100, enzyme_conc=0.002, km=0.15)                                    #aus Lehrbuch der Biochemie D.Voet et al. 
-        self.enolase = Enzyme("Enolase", kcat=200, enzyme_conc=0.002, km=0.07)                            #aus Riboregulation of Enolase 1 activity controls glycolysis and embryonic stem cell differentiation I. Huppertz et al.
-        self.pyruvate_kinase = Enzyme("Pyruvat-Kinase", kcat=350, enzyme_conc=0.002, km=0.07)             #aus Structure and Function of Human Erythrocyte Pyruvate Kinase: MOLECULAR BASIS OF NONSPHEROCYTIC HEMOLYTIC ANEMIA G.Valentini et al.
-                                                                                                           
+        self.hexokinase = Enzyme("Hexokinase", kcat=200, enzyme_conc=0.0025, km=0.05)                    
+        self.isomerase = Enzyme("Glukose-6-phosphat-Isomerase", kcat=150, enzyme_conc=0.002, km=0.1)      
+        self.pfk = Enzyme("Phosphofructokinase", kcat=300, enzyme_conc=0.002, km=0.08)                    
+        self.aldolase = Enzyme("Aldolase", kcat=100, enzyme_conc=0.0015, km=0.03)                         
+        self.triosephosphat_isomerase = Enzyme("Triosephosphatisomerase", kcat=4300, enzyme_conc=0.002, km=0.6)               
+        self.gapdh = Enzyme("Glycerinaldehyd-3-phosphat-Dehydrogenase", kcat=250, enzyme_conc=0.002, km=0.02)                                
+        self.pgk = Enzyme("3-Phosphoglyceratkinase", kcat=300, enzyme_conc=0.002, km=0.2)                                   
+        self.pgm = Enzyme("Phosphoyglyceratmutase", kcat=100, enzyme_conc=0.002, km=0.15)                                    
+        self.enolase = Enzyme("Enolase", kcat=200, enzyme_conc=0.002, km=0.07)                            
+        self.pyruvate_kinase = Enzyme("Pyruvat-Kinase", kcat=350, enzyme_conc=0.002, km=0.07)             
+        
         self.reactions = [                                                                                #Reaktionen definieren Ablauf aus Literatur; Umsetzung Substrat zu Produkt durch Enzym
             Reaction("Glukose → Glukose-6-phosphat", self.glucose, self.g6p, self.hexokinase),
             Reaction("Glukose-6-phosphat → Fruktose-6-phosphat", self.g6p, self.f6p, self.isomerase),
