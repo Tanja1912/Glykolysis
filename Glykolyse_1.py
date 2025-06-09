@@ -1,7 +1,6 @@
 #Importieren der Bibliotheken 
 #numpy --> numerische Berechnungen
 
-
 import numpy as np
 
 
@@ -86,8 +85,11 @@ class SplitReaction:                                                #chatgpt pro
 # Klasse für den Stoffwechselweg
 # -----------------------------
 class GlycolysisPathway:
-    def __init__(self):                   #definieren der Metabolite und Ausgangskonzentrationen                 
-        self.glucose = Metabolite("Glukose", 10.0)                                               #Ausgangskonz. von Glucose 10 mM
+    def __init__(self, glucose_conc=10.0):
+        self.glucose = Metabolite("Glukose", glucose_conc)
+                                                             # ... restliche Initialisierung unverändert
+                                                                #definieren der Metabolite und Ausgangskonzentrationen                 
+                                                 #Ausgangskonz. von Glucose 10 mM
         self.g6p = Metabolite("Glukose-6-phosphat", 0.0)
         self.f6p = Metabolite("Fruktose-6-phosphat", 0.0)
         self.f1_6bp = Metabolite("Fruktose-1,6-bisphosphat", 0.0)
@@ -122,29 +124,26 @@ class GlycolysisPathway:
             Reaction("2-Phosphoglycerat → Phosphoenolpyruvat", self.pg_2, self.pep, self.enolase),
             Reaction("Phosphoenolpyruvat → Pyruvat", self.pep, self.pyruvate, self.pyruvate_kinase),
                     ]
-
-
-
-
-    def simulate(self, steps=100, dt=1.0):                  #Simulation wird durchgeführt mit 100 Schritten mit 1.0 Schrittweite
-        history = {                                         #Konzentrationswerte von Glucose,G6P, F6P und Pyruvat
+    def simulate(self, steps=100, dt=1.0):
+        history = {
             "Glukose": [],
             "Glukose-6-phosphat": [],
             "Fruktose-6-phosphat": [],
             "Fruktose-1,6-bisphosphat": [],
             "Dihydroxyacetonphosphat": [],
             "Glycerinaldehyd-3-phosphat": [],
-            "1,3-Bisphosphoglycerat" : [],
-            "3-Phosphoglycerat" : [],
-            "2-Phosphoglycerat" : [],
-            "Phosphoenolpyruvat" : [],
-            "Pyruvat" :[], 
+            "1,3-Bisphosphoglycerat": [],
+            "3-Phosphoglycerat": [],
+            "2-Phosphoglycerat": [],
+            "Phosphoenolpyruvat": [],
+            "Pyruvat": [],
         }
 
-        for _ in range(steps):                              #Simulation für angegebene Schritte wird ausgeführt
+        for _ in range(steps):
             for reaction in self.reactions:
                 reaction.step(dt)
-            history["Glukose"].append(self.glucose.conc)    #speichern der Konzentrationen
+        # Konzentrationen speichern
+            history["Glukose"].append(self.glucose.conc)
             history["Glukose-6-phosphat"].append(self.g6p.conc)
             history["Fruktose-6-phosphat"].append(self.f6p.conc)
             history["Fruktose-1,6-bisphosphat"].append(self.f1_6bp.conc)
@@ -155,8 +154,10 @@ class GlycolysisPathway:
             history["2-Phosphoglycerat"].append(self.pg_2.conc)
             history["Phosphoenolpyruvat"].append(self.pep.conc)
             history["Pyruvat"].append(self.pyruvate.conc)
-
+        
         return history
+
+
 
 
 
