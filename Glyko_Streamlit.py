@@ -53,7 +53,7 @@ if st.button("Simulation starten"):
     for met, values in data.items():
         ax.plot(values, label=met) # Kurve für jeden Metaboliten
     ax.set_xlabel("Zeit (s)")
-    ax.set_ylabel("Konzentration (mmol)")
+    ax.set_ylabel("Konzentration (mmol/l)")
     ax.legend()
     ax.grid(True)
     st.pyplot(fig) # Anzeige der Grafik in der Streamlit-App
