@@ -143,7 +143,7 @@ class GlycolysisPathway:
             "Pyruvat": [],
         }
 
-        for reaction in range(steps):                                                                            #durchlaufen der Schleife steps-mal
+        for _ in range(steps):                                                                            #durchlaufen der Schleife steps-mal
             for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
                 reaction.step(dt)                                                                        
                 
