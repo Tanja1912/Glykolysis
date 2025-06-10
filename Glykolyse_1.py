@@ -129,19 +129,19 @@ class GlycolysisPathway:
             Reaction("Phosphoenolpyruvat → Pyruvat", self.pep, self.pyruvate, self.pyruvate_kinase),
                     ]
     def simulate(self, steps=100, dt=1.0):                                                                #Verlauf der Konzentrationen der Metabolite wird gespeichert (100 Zeitschritte mit 1 sek Länge → Anpassung über streamlit) über Dictionary
-            history = {                            
-            "Glukose": [],
-            "Glukose-6-phosphat": [],
-            "Fruktose-6-phosphat": [],
-            "Fruktose-1,6-bisphosphat": [],
-            "Dihydroxyacetonphosphat": [],
-            "Glycerinaldehyd-3-phosphat": [],
-            "1,3-Bisphosphoglycerat": [],
-            "3-Phosphoglycerat": [],
-            "2-Phosphoglycerat": [],
-            "Phosphoenolpyruvat": [],
-            "Pyruvat": [],
-        }
+        history = {                            
+        "Glukose": [],
+        "Glukose-6-phosphat": [],
+        "Fruktose-6-phosphat": [],
+        "Fruktose-1,6-bisphosphat": [],
+        "Dihydroxyacetonphosphat": [],
+        "Glycerinaldehyd-3-phosphat": [],
+        "1,3-Bisphosphoglycerat": [],
+        "3-Phosphoglycerat": [],
+        "2-Phosphoglycerat": [],
+        "Phosphoenolpyruvat": [],
+        "Pyruvat": [],
+    }
 
         for _ in range(steps):                                                                            #durchlaufen der Schleife steps-mal
             for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
