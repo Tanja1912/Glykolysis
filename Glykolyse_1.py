@@ -4,11 +4,10 @@
 import numpy as np
 
 
-# --- Objektorientierte Klassen ---
+#Objektorientierte Klassen
 
-# -----------------------------
-# Klasse für Metabolite
-# -----------------------------
+#Klasse für Metabolite
+
 
 class Metabolite:                               #Modelliert Metaboliten in biochemischen Netzwerk 
     def __init__(self, name, initial_conc):     #erstellung Metabolit
@@ -23,9 +22,9 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
         
     def __repr__(self):                         #Darstellung von Objekt als Text
         return f"{self.name}: {self.conc:.3f} mM"  #formatierter String mit Name des Metaboliten mit Konzentration auf 3 Dezimalstellen
-# -----------------------------
-# Klasse für Enzyme
-# -----------------------------
+
+#Klasse für Enzyme
+
 class Enzyme:                                   #Enzym Klasse mit Name,Turnover number, Enzymkonzentration und Michaelis-Menten-Konstante
     def __init__(self, name, kcat, enzyme_conc, km = 1.0):
         self.name = name
@@ -43,33 +42,32 @@ class Enzyme:                                   #Enzym Klasse mit Name,Turnover 
     def __repr__(self):
         return f"Enzyme({self.name}, kcat={self.kcat}, [E]={self.enzyme_conc}, "f"vmax={self.vmax:.3f}, km={self.km})"
 
-# -----------------------------
-# Klasse für Reaktionen
-# -----------------------------
+
+#Klasse für Reaktionen
+
 class Reaction:
-    def __init__(self, name, substrate, product, enzyme):    
-        self.name = name
-        self.substrate = substrate                             # Substrat 
-        self.product = product                                 # entstehendes Produkt
-        self.enzyme = enzyme
+    def __init__(self, name, substrate, product, enzyme):      #initialisiert enzymkatalysierte Reaktion
+        self.name = name                                       #Name der Reaktion
+        self.substrate = substrate                             #Substrat 
+        self.product = product                                 #entstehendes Produkt
+        self.enzyme = enzyme                                   #verwendetes Enzym
     def rate(self):
         return self.enzyme.rate(self.substrate.conc)           #Berechnet die aktuelle Reaktionsgeschwindigkeit basierend auf atueller Substratkonzentration
     
-    def step(self, dt):
-        v = self.rate()
-        delta = v * dt
-                                                            # Delta darf nicht größer sein als aktuelle Substratkonzentration
-        delta = min(delta, self.substrate.conc)
-        self.substrate.update_conc(-delta)
-        self.product.update_conc(delta)
+    def step(self, dt):                                            #führt Zeitschritt der Reaktion durch und aktualisiert die Konzentrationen
+        v = self.rate()                                            #Momentane Reaktionsgeschwindigkeit
+        delta = v * dt                                             #Substratmenge die umgesetzt wird   
+        delta = min(delta, self.substrate.conc)                    #sicherstellen, dass nur so viel Substrat umgesetzt wird wie tatsächlich vorhanden ist
+        self.substrate.update_conc(-delta)                         #abnahme Konzentration um delta
+        self.product.update_conc(delta)                            #Zunahme Konzentration um delta
 
 
     def __repr__(self):
         return f"Reaction({self.name}, Enzyme={self.enzyme})"
         
-# -----------------------------
-# Klasse für Splitreaktion
-# -----------------------------    
+
+#Klasse für Splitreaktion
+    
 class SplitReaction:                                                
     def __init__(self, name, substrate, product1, product2, enzyme):
         self.name = name
@@ -79,23 +77,23 @@ class SplitReaction:
         self.enzyme = enzyme
 
     def rate(self):
-        return self.enzyme.rate(self.substrate.conc)                #siehe oben
+        return self.enzyme.rate(self.substrate.conc)                
    
-    def step(self, dt):
-        v = self.rate()
-        delta = v * dt
-        delta = min(delta, self.substrate.conc)
-        self.substrate.update_conc(-delta)
-        self.product1.update_conc(delta)
+    def step(self, dt):                                             
+        v = self.rate()                                            
+        delta = v * dt                                             
+        delta = min(delta, self.substrate.conc)                    
+        self.substrate.update_conc(-delta)                          
+        self.product1.update_conc(delta)                            #Zunahme um delta --> korrektes Verhältnis der Umsetzung
         self.product2.update_conc(delta)
 
 
     def __repr__(self):
         return f"SplitReaction({self.name}, Enzyme={self.enzyme})"
 
-# -----------------------------
-# Klasse für den Stoffwechselweg
-# -----------------------------
+
+#Klasse für den Stoffwechselweg
+
 class GlycolysisPathway:
     def __init__(self, glucose_conc=10.0):                                                              #Übergabe Anfangskonzentration von Glukose (10mMol/L); Platzhalter: kann in Streamlit angepasst werden oder beim erstellen eines Objekts der Klasse 
         self.glucose = Metabolite("Glukose", glucose_conc)                                              #definieren der Metabolite mit spezifischen Namen und Ausgangskonzentrationen (alle starten bei 0 außer Glukose)                         
@@ -147,7 +145,7 @@ class GlycolysisPathway:
         "Phosphoenolpyruvat": [],
         "Pyruvat": [],
     }
-# Anfangswerte speichern
+                                                                                                          #Anfangswerte speichern --> sodass Streamlit bei angegebener Konzentration beginnt und nicht bereits das erste Mal die Schleife durchläuft
         history["Glukose"].append(self.glucose.conc)
         history["Glukose-6-phosphat"].append(self.g6p.conc)
         history["Fruktose-6-phosphat"].append(self.f6p.conc)
@@ -164,7 +162,7 @@ class GlycolysisPathway:
             for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
                 reaction.step(dt)                                                                        
                 
-            history["Glukose"].append(self.glucose.conc)                                                  #aktuelle Konzentration der Metabolite wird im history Dictionary gespeichert durch append Funktion                                                  
+            history["Glukose"].append(self.glucose.conc)                                                  #aktuelle Konzentration der Metabolite wird in einer Liste gespeichert welche im history Dictionary unter dem jeweiligen Namen gespeichert wird                                                  
             history["Glukose-6-phosphat"].append(self.g6p.conc)
             history["Fruktose-6-phosphat"].append(self.f6p.conc)
             history["Fruktose-1,6-bisphosphat"].append(self.f1_6bp.conc)
