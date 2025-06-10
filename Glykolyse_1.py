@@ -17,7 +17,7 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
     
     def update_conc(self, delta):               #Aktualisiert Konzentration der Metaboliten basierend auf delta
         self.conc += delta                      #Veränderung Konzentration um delta
-        self.conc = max(self.conc, 0)           #Konzentration darf nicht negativ sein
+        self.conc = max(self.conc, 0)           #sicherstellen dass Konzentration nicht < 0
         self.history.append(self.conc)          #Speichern der Konzentration für spätere Darstellung
         
     def __repr__(self):                         #Darstellung von Objekt als Text
@@ -25,20 +25,20 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
 
 #Klasse für Enzyme
 
-class Enzyme:                                   #Enzym Klasse mit Name,Turnover number, Enzymkonzentration und Michaelis-Menten-Konstante
+class Enzyme:                                   #Enzym Klasse mit Name,Turnover number (kcat), Enzymkonzentration und Michaelis-Menten-Konstante (km)
     def __init__(self, name, kcat, enzyme_conc, km = 1.0):
         self.name = name
         self.enzyme_conc = enzyme_conc         #Schätzung von Enzymaktivität und Zellvolumen in mMol
-        self.kcat = kcat                       #kcat in 1/s
-        self.vmax = kcat * enzyme_conc         #Berechnung vmax aus kcat und enzym Konzentration in mMol/s
+        self.kcat = kcat                       #kcat (Turnover Number) in 1/s
+        self.vmax = kcat * enzyme_conc         #Berechnung vmax (maximale Reaktionsgeschwindigkeit) aus kcat und Enzymkonzentration in mMol/s
         self.km = km                           #km in mMol
 
     def rate(self, substrate_conc):            #Berechnung Enzymgeschwindigkeit basierend auf der Substratkonzentration nach Michaelis-Menten
         s = substrate_conc              
-        if s > 0:                              #Substrat > 0 --> Berechnung vmax
-            return self.vmax * s / (self.km + s)
+        if s > 0:                              #wenn Substrat > 0 berechne die Geschwindigkeit (vmax) nach Michaelis-Menten 
+            return self.vmax * s / (self.km + s) #Berechnung nach Michaelis-Menten-Gleichung
         else:
-            return 0                           #Substrat < 0 --> Geschwindigkeit = o
+            return 0                           #Substrat < 0 --> Geschwindigkeit = o --> keine negative Geschwindigkeit
     def __repr__(self):
         return f"Enzyme({self.name}, kcat={self.kcat}, [E]={self.enzyme_conc}, "f"vmax={self.vmax:.3f}, km={self.km})"
 
@@ -58,15 +58,15 @@ class Reaction:
         v = self.rate()                                            #Momentane Reaktionsgeschwindigkeit
         delta = v * dt                                             #Substratmenge die umgesetzt wird   
         delta = min(delta, self.substrate.conc)                    #sicherstellen, dass nur so viel Substrat umgesetzt wird wie tatsächlich vorhanden ist
-        self.substrate.update_conc(-delta)                         #abnahme Konzentration um delta
-        self.product.update_conc(delta)                            #Zunahme Konzentration um delta
+        self.substrate.update_conc(-delta)                         #Abnahme der Substratkonzentration um delta
+        self.product.update_conc(delta)                            #Zunahme der Produktkonzentration um delta
 
 
     def __repr__(self):
         return f"Reaction({self.name}, Enzyme={self.enzyme})"
         
 
-#Klasse für Splitreaktion
+#Klasse für Splitreaktion --> Spezialfall Spaltung eines Substrats in 2 Produkte
     
 class SplitReaction:                                                
     def __init__(self, name, substrate, product1, product2, enzyme):
@@ -84,7 +84,7 @@ class SplitReaction:
         delta = v * dt                                             
         delta = min(delta, self.substrate.conc)                    
         self.substrate.update_conc(-delta)                          
-        self.product1.update_conc(delta)                            #Zunahme um delta --> korrektes Verhältnis der Umsetzung
+        self.product1.update_conc(delta)                            #Zunahme beider Produkte um delta --> korrektes Verhältnis der Umsetzung aus Fruktose-1,6-bisphosphat → Dihydroxyacetonphosphat + Glycerinaldehyd-3-phosphat
         self.product2.update_conc(delta)
 
 
@@ -92,10 +92,10 @@ class SplitReaction:
         return f"SplitReaction({self.name}, Enzyme={self.enzyme})"
 
 
-#Klasse für den Stoffwechselweg
+#Klasse für den Stoffwechselweg, mit allen Metaboliten, Enzymen und den jeweiligen Reaktionen
 
 class GlycolysisPathway:
-    def __init__(self, glucose_conc=10.0):                                                              #Übergabe Anfangskonzentration von Glukose (10mMol/L); Platzhalter: kann in Streamlit angepasst werden oder beim erstellen eines Objekts der Klasse 
+    def __init__(self, glucose_conc=10.0):                                                              #Übergabe Anfangskonzentration von Glukose (10mMol/L); Platzhalter: kann in Streamlit angepasst werden oder beim Erstellen eines Objekts der Klasse 
         self.glucose = Metabolite("Glukose", glucose_conc)                                              #definieren der Metabolite mit spezifischen Namen und Ausgangskonzentrationen (alle starten bei 0 außer Glukose)                         
         self.g6p = Metabolite("Glukose-6-phosphat", 0.0)
         self.f6p = Metabolite("Fruktose-6-phosphat", 0.0)
@@ -107,7 +107,7 @@ class GlycolysisPathway:
         self.pg_2 = Metabolite("2-Phosphoglycerat", 0.0)
         self.pep = Metabolite("Phosphoenolpyruvat", 0.0)
         self.pyruvate = Metabolite("Pyruvat", 0.0) 
-                                                                                                          #definieren der Enzyme mit spezifischen Namen, Turnover Number, typischen Enzymkonzentrationen sowie Michaelis-Menten-Konstante → Werte aus der Literatur 
+                                                                                                          #definieren der Enzyme mit Namen, Turnover Number (kcat), typischen Enzymkonzentrationen sowie Michaelis-Menten-Konstante(km) → Annäherungswerte aus der Literatur → Anpassung über streamlit
         self.hexokinase = Enzyme("Hexokinase", kcat=200, enzyme_conc=0.0025, km=0.05)                    
         self.isomerase = Enzyme("Glukose-6-phosphat-Isomerase", kcat=150, enzyme_conc=0.002, km=0.1)      
         self.pfk = Enzyme("Phosphofructokinase", kcat=300, enzyme_conc=0.002, km=0.08)                    
@@ -131,7 +131,7 @@ class GlycolysisPathway:
             Reaction("2-Phosphoglycerat → Phosphoenolpyruvat", self.pg_2, self.pep, self.enolase),
             Reaction("Phosphoenolpyruvat → Pyruvat", self.pep, self.pyruvate, self.pyruvate_kinase),
                     ]
-    def simulate(self, steps=100, dt=0.1):                                                                #Verlauf der Konzentrationen der Metabolite wird gespeichert (100 Zeitschritte mit 1 sek Länge → Anpassung über streamlit) über Dictionary
+    def simulate(self, steps=100, dt=0.1):                                                                #Speichert Verlauf der Metabolitkonzentrationen über Anzahl von Zeitschritten (100 Zeitschritte mit je dt Sekunden → Anpassung über streamlit) 
         history = {                            
         "Glukose": [],
         "Glukose-6-phosphat": [],
@@ -162,7 +162,7 @@ class GlycolysisPathway:
             for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
                 reaction.step(dt)                                                                        
                 
-            history["Glukose"].append(self.glucose.conc)                                                  #aktuelle Konzentration der Metabolite wird in einer Liste gespeichert welche im history Dictionary unter dem jeweiligen Namen gespeichert wird                                                  
+            history["Glukose"].append(self.glucose.conc)                                                  #neue Konzentration der Metabolite wird in einer Liste gespeichert welche im history-Dictionary unter dem jeweiligen Namen gespeichert wird                                                  
             history["Glukose-6-phosphat"].append(self.g6p.conc)
             history["Fruktose-6-phosphat"].append(self.f6p.conc)
             history["Fruktose-1,6-bisphosphat"].append(self.f1_6bp.conc)
