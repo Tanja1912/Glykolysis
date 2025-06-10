@@ -11,7 +11,7 @@ st.title("Glykolyse-Simulation")
 st.sidebar.header("Simulation")
 steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10) # Auswahl des Simulationszeitraums über einen Schieberegler
 dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1) # Eingabe des Zeitintervalls pro Simulationsschritt
-glucose_input = st.slider("Glukose-Konzentration (mmolol/L)", min_value=0.0, max_value=100.0, step=1) # Eingabe der Anfangskonzentration von Glukose
+glucose_input = st.slider("Glukose-Konzentration (mmolol/L)", min_value=0.0, max_value=100.0, step=1.0) # Eingabe der Anfangskonzentration von Glukose
 
 
 
