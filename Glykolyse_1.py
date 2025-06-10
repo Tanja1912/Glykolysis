@@ -29,10 +29,10 @@ class Metabolite:                               #Modelliert Metaboliten in bioch
 class Enzyme:                                   #Enzym Klasse mit Name,Turnover number, Enzymkonzentration und Michaelis-Menten-Konstante
     def __init__(self, name, kcat, enzyme_conc, km = 1.0):
         self.name = name
-        self.enzyme_conc = enzyme_conc         #Schätzung von Enzymaktivität und Zellvolumen in mM
+        self.enzyme_conc = enzyme_conc         #Schätzung von Enzymaktivität und Zellvolumen in mMol
         self.kcat = kcat                       #kcat in 1/s
-        self.vmax = kcat * enzyme_conc         #Berechnung vmax aus kcat und enzym Konzentration in mM/s
-        self.km = km                           #km in mM
+        self.vmax = kcat * enzyme_conc         #Berechnung vmax aus kcat und enzym Konzentration in mMol/s
+        self.km = km                           #km in mMol
 
     def rate(self, substrate_conc):            #Berechnung Enzymgeschwindigkeit basierend auf der Substratkonzentration nach Michaelis-Menten
         s = substrate_conc              
