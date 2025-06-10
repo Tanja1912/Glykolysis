@@ -4,22 +4,19 @@ Simulierung des biochemischen Prozesses der Glykolyse mit objektorientierter Pro
 
 ## Projektinhalte
 
-- `Simulationsmodul`: Berechnet den Konzentrationsverlauf auf Basis der Enzymparameter.
+- `Simulationsmodul`: Berechnet den Konzentrationsverlauf auf Basis der Enzymparameter
 
-- `Webinterface`: Ermöglicht einfache Benutzerinteraktion und Visualisierung.
+- `Webinterface`: Ermöglicht einfache Benutzerinteraktion und Visualisierung
 
 - `Stoffwechselpfaddiagramm`: Veranschaulicht die metabolischen Schritte und Enzymkatalysen der Glykolyse
 
 
 ## Verwendete Bibliotheken
 - `numpy` – für numerische Berechnungen  
-- `streamlit` – für die Erstellung interaktiver Webanwendungen direkt in Python. Ermöglicht die einfache Integration von Slidern, Buttons, Diagrammen und Layouts ohne Frontend-Kenntnisse.
-- `matplotlib` – für die Darstellung der zeitlichen Konzentrationsverläufe der Metaboliten in Form von Liniengrafiken.
-- `graphviz` – für die Visualisierung des Glykolysewegs als gerichteter Graph, einschließlich reversibler und irreversibler Reaktionen.
-- `Glykolyse_1` – benutzerdefiniertes Modul, das die Klasse `GlycolysisPathway` enthält. Diese Klasse übernimmt die Simulation der Glykolyse auf Basis enzymkinetischer Modelle (Michaelis-Menten).
-
-
-- **Glykolyse_1 (eigenes Modul)**: Enthält das Modell `GlycolysisPathway`, das die mathematische Simulation der Glykolyse übernimmt. Dieses Modell basiert auf Michaelis-Menten-Kinetik und führt die zeitliche Integration der Reaktionsschritte durch.
+- `streamlit` – für die Erstellung interaktiver Webanwendungen direkt in Python. Ermöglicht die einfache Integration von Slidern, Buttons, Diagrammen und Layouts ohne Frontend-Kenntnisse
+- `matplotlib` – für die Darstellung der zeitlichen Konzentrationsverläufe der Metaboliten in Form von Liniengrafiken
+- `graphviz` – für die Visualisierung des Glykolysewegs als gerichteter Graph, einschließlich reversibler und irreversibler Reaktionen
+- `Glykolyse_1 (eigenes Modul)`- Enthält das Modell `GlycolysisPathway`, das die mathematische Simulation der Glykolyse übernimmt. Dieses Modell basiert auf Michaelis-Menten-Kinetik und führt die zeitliche Integration der Reaktionsschritte durch
 ### Struktur und Funktionsweise
 
 #### Klassen
