@@ -11,15 +11,13 @@ st.title("Glykolyse-Simulation")
 st.sidebar.header("Simulation")
 steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10) # Auswahl des Simulationszeitraums über einen Schieberegler
 dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1) # Eingabe des Zeitintervalls pro Simulationsschritt
-glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=10.0, step=0.1) # Eingabe der Anfangskonzentration von Glukose
+glucose_input = st.slider("Glukose-Konzentration (mmolol/L)", min_value=0.0, max_value=100.0, step=1) # Eingabe der Anfangskonzentration von Glukose
 
 
 
 # Initialisierung des Modells mit der angegebenen Glukosekonzentration
 model = GlycolysisPathway(glucose_conc=glucose_input)
 
-# Modell laden
-model = GlycolysisPathway(glucose_conc=glucose_input)
 
 # Mapping von Enzymnamen zu Instanzen
 enzym_map = {
@@ -40,9 +38,9 @@ st.sidebar.header("Enzymparameter")
 for name, enzyme in enzym_map.items():
     with st.sidebar.expander(f"{name}", expanded=False):
         enzyme.kcat = st.slider(f"{name} kcat (1/s)", 50, 5000, enzyme.kcat, 10) # Einstellung der katalytischen Rate (kcat)
-        enzyme.enzyme_conc = st.number_input(f"{name} – [E] (mM)", 0.0001, 0.01, enzyme.enzyme_conc, 0.0001) # Einstellung der Enzymkonzentration
-        enzyme.km = st.number_input(f"{name} Km (mM)", 0.01, 1.0, enzyme.km, 0.01)  # Einstellung des Km-Werts (Michaelis-Menten-Konstante)
-        enzyme.vmax = enzyme.kcat * enzyme.enzyme_conc  # # Automatische Berechnung von Vmax aus kcat und Enzymkonzentration
+        enzyme.enzyme_conc = st.number_input(f"{name} – [E] (mmol)", 0.0001, 0.01, enzyme.enzyme_conc, 0.0001) # Einstellung der Enzymkonzentration
+        enzyme.km = st.number_input(f"{name} Km (mmol)", 0.01, 1.0, enzyme.km, 0.01)  # Einstellung des Km-Werts (Michaelis-Menten-Konstante)
+        enzyme.vmax = enzyme.kcat * enzyme.enzyme_conc  #  Automatische Berechnung von Vmax aus kcat und Enzymkonzentration
 
 # Simulation starten bei Klick auf den Button
 if st.button("Simulation starten"):
@@ -55,7 +53,7 @@ if st.button("Simulation starten"):
     for met, values in data.items():
         ax.plot(values, label=met) # Kurve für jeden Metaboliten
     ax.set_xlabel("Zeit (s)")
-    ax.set_ylabel("Konzentration (mM)")
+    ax.set_ylabel("Konzentration (mmol)")
     ax.legend()
     ax.grid(True)
     st.pyplot(fig) # Anzeige der Grafik in der Streamlit-App
@@ -72,7 +70,7 @@ Reversible Reaktionen = Doppelpfeil
 Irreversible Reaktionen = Einfacher Pfeil
 """)
 
-# Graphviz Diagramm
+# Graphviz Diagrammol
 dot = graphviz.Digraph()
 
 # Metaboliten
@@ -114,7 +112,7 @@ for start, end, enzyme, reversible in steps:
     direction = "both" if reversible else "forward"
     dot.edge(start, end, label=enzyme, dir=direction)
 
-# Diagramm anzeigen
+# Diagrammol anzeigen
 st.graphviz_chart(dot)
 
 
