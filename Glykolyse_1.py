@@ -55,11 +55,14 @@ class Reaction:
     def rate(self):
         return self.enzyme.rate(self.substrate.conc)           #Berechnet die aktuelle Reaktionsgeschwindigkeit basierend auf atueller Substratkonzentration
     
-    def step(self, dt):                                        #zeitliche Änderung der Konzentration in Zeitabschnitt
-        v = self.rate()                                        #Momentane Reaktionsgeschwindigkeit
-        delta = v * dt                                         #Substratmenge die umgesetzt wird
-        self.substrate.update_conc(-delta)                     #Veränderung der Substrat Konzentration --> sinkt bei -delta 
-        self.product.update_conc(delta)                        #Veränderung der Produkt Konzentration --> steigt bei delta
+    def step(self, dt):
+        v = self.rate()
+        delta = v * dt
+                                                            # Delta darf nicht größer sein als aktuelle Substratkonzentration
+        delta = min(delta, self.substrate.conc)
+        self.substrate.update_conc(-delta)
+        self.product.update_conc(delta)
+
 
     def __repr__(self):
         return f"Reaction({self.name}, Enzyme={self.enzyme})"
@@ -79,11 +82,13 @@ class SplitReaction:
         return self.enzyme.rate(self.substrate.conc)                #siehe oben
    
     def step(self, dt):
-        v = self.rate()                                             #berechnet Reaktionsgeschwindigkeit
-        delta = v * dt                                              #Menge an Substrat die in Zeit dt umgesetzt wird  
-        self.substrate.update_conc(-delta)                          #Verringerung Substrat um delta
-        self.product1.update_conc(delta / 2)                        #Erhöhung Konzentration der Produkte um je 50%
-        self.product2.update_conc(delta / 2)
+        v = self.rate()
+        delta = v * dt
+        delta = min(delta, self.substrate.conc)
+        self.substrate.update_conc(-delta)
+        self.product1.update_conc(delta)
+        self.product2.update_conc(delta)
+
 
     def __repr__(self):
         return f"SplitReaction({self.name}, Enzyme={self.enzyme})"
@@ -128,7 +133,7 @@ class GlycolysisPathway:
             Reaction("2-Phosphoglycerat → Phosphoenolpyruvat", self.pg_2, self.pep, self.enolase),
             Reaction("Phosphoenolpyruvat → Pyruvat", self.pep, self.pyruvate, self.pyruvate_kinase),
                     ]
-    def simulate(self, steps=100, dt=1.0):                                                                #Verlauf der Konzentrationen der Metabolite wird gespeichert (100 Zeitschritte mit 1 sek Länge → Anpassung über streamlit) über Dictionary
+    def simulate(self, steps=100, dt=0.1):                                                                #Verlauf der Konzentrationen der Metabolite wird gespeichert (100 Zeitschritte mit 1 sek Länge → Anpassung über streamlit) über Dictionary
         history = {                            
         "Glukose": [],
         "Glukose-6-phosphat": [],
@@ -142,6 +147,18 @@ class GlycolysisPathway:
         "Phosphoenolpyruvat": [],
         "Pyruvat": [],
     }
+# Anfangswerte speichern
+        history["Glukose"].append(self.glucose.conc)
+        history["Glukose-6-phosphat"].append(self.g6p.conc)
+        history["Fruktose-6-phosphat"].append(self.f6p.conc)
+        history["Fruktose-1,6-bisphosphat"].append(self.f1_6bp.conc)
+        history["Dihydroxyacetonphosphat"].append(self.dhap.conc)
+        history["Glycerinaldehyd-3-phosphat"].append(self.g3p.conc)
+        history["1,3-Bisphosphoglycerat"].append(self.bpg_1_3.conc)
+        history["3-Phosphoglycerat"].append(self.pg_3.conc)
+        history["2-Phosphoglycerat"].append(self.pg_2.conc)
+        history["Phosphoenolpyruvat"].append(self.pep.conc)
+        history["Pyruvat"].append(self.pyruvate.conc)
 
         for _ in range(steps):                                                                            #durchlaufen der Schleife steps-mal
             for reaction in self.reactions:                                                               #aufrufen der Methode step(dt) für jede Reaktion
@@ -160,6 +177,7 @@ class GlycolysisPathway:
             history["Pyruvat"].append(self.pyruvate.conc)
         
         return history                                                                                     #Rückgabe des Dictionarys mit den Konzentrationsverläufen über die Zeit                                                             
+
 
 
 
