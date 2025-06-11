@@ -40,9 +40,7 @@ Simulierung des biochemischen Prozesses der Glykolyse mit objektorientierter Pro
 
 ## Beispiel: Simulation starten
 
-```python
-# Initialisierung
-pathway = GlycolysisPathway(glucose_conc=10.0)
+Stellen Sie sicher dass alle Dateien in dem selben Ordner installiert sind. Sie können das Programm mit dem folgenden Terminalbefehl starten:
 
-# Simulation durchführen (z. B. 100 Zeitschritte à 1 Sekunde)
-history = pathway.simulate(steps=100, dt=1.0)
+```python
+streamlit run Glyko_Streamlit.py
