@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import graphviz  
+
 from Glykolyse_1 import GlycolysisPathway
 
 # Grundeinstellungen für die Streamlit-App
@@ -12,8 +13,6 @@ st.sidebar.header("Simulation")
 steps = st.sidebar.slider("Anzahl Schritte", 10, 1000, 100, step=10)                                          # Auswahl des Simulationszeitraums über einen Schieberegler
 dt = st.sidebar.number_input("Zeitschritt (dt)", 0.01, 10.0, 1.0, step=0.1)                                   # Eingabe des Zeitintervalls pro Simulationsschritt
 glucose_input = st.slider("Glukose-Konzentration (mmol/L)", min_value=0.0, max_value=100.0, step=1.0)         # Eingabe der Anfangskonzentration von Glukose
-
-
 
 # Initialisierung des Modells mit der angegebenen Glukosekonzentration
 model = GlycolysisPathway(glucose_conc=glucose_input)
@@ -38,7 +37,9 @@ st.sidebar.header("Enzymparameter")
 for name, enzyme in enzym_map.items():
     with st.sidebar.expander(f"{name}", expanded=False):
         enzyme.kcat = st.slider(f"{name} kcat (1/s)", 50, 5000, enzyme.kcat, 10)                                    # Einstellung der katalytischen Rate (kcat)
-        enzyme.enzyme_conc = st.number_input(f"{name} – [E] (mmol)", 0.0001, 0.01, enzyme.enzyme_conc, 0.0001)      # Einstellung der Enzymkonzentration
+        enzyme.enzyme_conc = st.number_input(
+            f"{name} – [E] (mmol)", 
+            0.0001, 0.01, enzyme.enzyme_conc, 0.0001)                                                               # Einstellung der Enzymkonzentration
         enzyme.km = st.number_input(f"{name} Km (mmol)", 0.01, 1.0, enzyme.km, 0.01)                                # Einstellung des Km-Werts (Michaelis-Menten-Konstante)
         enzyme.vmax = enzyme.kcat * enzyme.enzyme_conc                                                              #  Automatische Berechnung von Vmax aus kcat und Enzymkonzentration
 
@@ -57,8 +58,6 @@ if st.button("Simulation starten"):
     ax.legend()
     ax.grid(True)
     st.pyplot(fig)                                                                                                  # Anzeige der Grafik in der Streamlit-App
-
-
 
 st.title("Glykolyse: Fluss der Metaboliten")
 
@@ -96,7 +95,8 @@ steps = [
     ("Fructose-1,6-bisphosphat", "Dihydroxyacetonphosphat", "Aldolase", True),
     ("Fructose-1,6-bisphosphat", "Glycerinaldehyd-3-phosphat", "Aldolase", True),
     ("Dihydroxyacetonphosphat", "Glycerinaldehyd-3-phosphat", "Triosephosphat-Isomerase", True),
-    ("Glycerinaldehyd-3-phosphat", "1,3-Bisphosphoglycerat", "Glycerinaldehyd-3-phosphat-Dehydrogenase", True),
+    ("Glycerinaldehyd-3-phosphat", "1,3-Bisphosphoglycerat", 
+     "Glycerinaldehyd-3-phosphat-Dehydrogenase", True),
     ("1,3-Bisphosphoglycerat", "3-Phosphoglycerat", "Phosphoglycerat-Kinase", False),
     ("3-Phosphoglycerat", "2-Phosphoglycerat", "Phosphoglycerat-Mutase", True),
     ("2-Phosphoglycerat", "Phosphoenolpyruvat", "Enolase", True),
