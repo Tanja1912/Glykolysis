@@ -40,7 +40,7 @@ Simulierung des biochemischen Prozesses der Glykolyse mit objektorientierter Pro
 
 ## Beispiel: Simulation starten
 
-Stellen Sie sicher dass alle Dateien in dem selben Ordner installiert sind. Sie können das Programm mit dem folgenden Terminalbefehl starten:
+Stellen Sie sicher, dass alle Dateien in dem selben Ordner installiert sind. Sie können das Programm mit dem folgenden Terminalbefehl starten:
 
 ```python
 streamlit run Glyko_Streamlit.py
